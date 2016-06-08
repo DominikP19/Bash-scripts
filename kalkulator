@@ -1,0 +1,75 @@
+#!/bin/sh 
+
+# wywołanie skryptu $0 arg op \( arg op arg \)
+
+
+
+check_number()
+{
+	state=0
+	case $1 in
+		''|*[!0-9]*) state=`expr $state +1` ;;
+    	#	[0-9]*)  ;;
+    		*)  ;;
+	esac
+	#"Podany argument \"$1\" nie jest liczba" exit 2
+	if [ $state = 1 ]
+	then
+		echo "Podany argument \"$1\" nie jest liczba"
+		exit 2
+	fi
+}
+check_operator()
+{
+	case $1 in
+		'+'*) ;;
+		'-'*) ;;
+		'*'*) ;;
+		'/'*) ;;
+		*) echo "\"$1\" nie jest operatorem" ; exit 2;
+	esac
+}
+check_brackets()
+{
+	case $1 in 
+		'('*) ;;
+		')'*) ;;
+		*) echo "\"$1\" nie jest nawiasem. Nawias jest niedomkniety" ; exit 2;
+	esac
+}
+
+calculate_brackets()
+{
+	partial_var=`expr "$1" $2 "$3"` 
+}
+
+if [ $# -ne 7 ] # sprawdzenie ilości argumentow
+then
+	echo "poprawne wywpłanie to $0 arg op ( arg op arg )"
+	exit 1
+fi
+
+#sprawdzenie poprawnosci argumentow
+check_number $1
+check_number $4
+check_number $6
+check_operator $2
+check_operator $5
+check_brackets $3
+check_brackets $7
+
+partial_var=0
+final_var=0
+
+calculate_brackets $4 $5 $6
+
+final_var=`expr "$1" $2 "$partial_var"`
+
+
+echo "$final_var"
+
+#while [ $1 ]
+#do 
+#	echo $1
+#	shift
+#done
