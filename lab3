@@ -1,0 +1,43 @@
+Sprawozdanie USUX Laboratorium 3
+24.03.16
+
+1. Atrybuty: PID (process ID), TTY (Terminal) TIME (łączny czas procesora), START (data rozpoczęcia procesu), CMD (nazwa pliku wykonywanego), %CPU (procent wykorzystania zasobów procesora), %MEM (stosunek RSS do dostępnej pamięci), VSZ (użycie wortualnej pamięci), RSS (resident set size), STAT (stan procesu).
+
+Kody stanu procesu:
+D- nieprzerywalnie uśpiony
+R- przerywalnie uśpiony
+T- zatrzymany
+X- zmarły (taki nie powinien występować)
+Z- proces niefunkcjonujący, który został zakończony, ale nie usunięty przez proces nadrzędny
+
+Dodatkowe znaki informujące o procesie:
+< - wysoki priorytet
+N - niski priorytet
+L - ma zablokowane strony w pamięci
+s - proces jest liderem sesji
+l - wielowątkowy
++ - proces znajduje się w pierwszoplanowej grupie procesów
+
+2. Drzewo dziedziczenia procesu o PID=0 
+Do tego celu najlepiej wykorzystać polecenie pstree. Używając komendy "pstree usux22" pozwala mi zidentyfikować moje procesy. W celu wyświetlenia całego drzewa można użyć polecenia "pstree".
+Proces o PID=0 odpowiada za zarzadzanie pamięcią. Następnymi procesami są proces init o PID=1 i PID=2. Po PID=1 dziedziczy terminal uzytkownika, a następnie powłoka zsh.
+Po procesie PID=1 dziedziczą też inne procesy użytkownika takie jak procesy przeglądarki firefox, procesy edytora gedit. 
+
+3. W tym celu należy użyć komendy o następujacej składni: "trap 'akcja' SIGINT".
+Powoduje to wykonananie określonej w poleceniu akcji po zastosowaniu sygnału przerwania w trakcie działającego procesu. Po ustawieniu "trap" zmiania się obsługa sygnału we wszystkich nowych procesach uruchamianych przez bieżący shell. 
+
+4.Polecenia jobs, fg, bg
+Polecenie "jobs" wyświetla listę zatrzymanych zadań.
+Polecenie "fg" uruchamia na nowo zatrzymane zadanie na pierwszym planie, natomiast "bg" uruchamia je w tle.
+Używając poleceń "fg" i "bg" bez dodatkowych argumentów, biorą one ostatnio zawieszony proces. 
+Proces można zawiesić używając Ctrl-Z, za pomocą którego wysyłany jest sygnał SIGTSTP do bierzącego procesu.
+Jednym ze sposobów jest po rozpoczęciu procesu wysłanie sygnału SIGTSTP, a nastepnie użycie polecenia "bg" z numerem procesu który ma wznowić działanie. Numer procesu można sprawdzić za pomocą polecenia "jobs". Analogicznie można proces z tła przenieść na pierwszy plan najpierw zawieszając proces, a nastepnie uruchamiając go ponownie na pierwszym planie.
+
+5.Priorytety mogą być z przedziału -20...+19, z czego priorytety o wartościach ujemnych są dostępne dla ROOTa. Im niższa wartość priorytetu, tym jest on mniej miły, co oznacza że jest ważniejszy.
+Priorytety można podejrzeć za pomocą polecenia "top" lub bardziej rozbudowanego "htop".
+Priorytety można również sprawdzić przy pomocy komendy "ps -l".
+Zmian priorytetudokonuje się za pomocą poleceń "nice" i "renice"
+Na przykład chcąc przypisac priorytet -20 stostuje się następujące polecenie:
+"nice -n -20 komenda_do_wykonania" - to polecenie uruchomi komendę z priorytetem -20.
+Używając na przykład "renice -n 15 -p PID_procesu" zostanie zmieniony priorytet procesu o podanym PID na 15. 
+Przy poleceniu "renice" należy pamiętać, że można zmniejszyć priorytet (na przykład z 0 na 15), ale nie można go potem zwiększyć (z 15 na 0).
